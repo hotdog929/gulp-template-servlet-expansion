@@ -1,7 +1,4 @@
 var assert = require('assert');
-var EventEmitter = require('events');
-var Q = require('q');
-var es = require('event-stream');
 var gulp = require('gulp-param')(require('gulp'), process.argv);
 var expansion = require('../index');
 

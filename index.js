@@ -181,7 +181,7 @@ function scriptEnvTask(){
     return Q.nfcall(
         fs.writeFile,
         util.dirPath(info.scriptDir) + '_env.' + info.scriptFilenameExtension,
-        gulpTemplateServletExpansion.createScriptEnvContent(info.version, util.dirPath(util.dirPath(info.cdn) + info.version)));
+        gulpTemplateServletExpansion.createScriptEnvContent(info.version, util.filePath(util.dirPath(info.cdn) + info.version)));
 }
 
 /* override */
@@ -212,7 +212,7 @@ function cssEnvTask(){
     return Q.nfcall(
         fs.writeFile,
         util.dirPath(info.cssDir) + '_env.' + info.cssFilenameExtension,
-        gulpTemplateServletExpansion.createCssEnvContent(info.version, util.dirPath(util.dirPath(info.cdn) + info.version)));
+        gulpTemplateServletExpansion.createCssEnvContent(info.version, util.filePath(util.dirPath(info.cdn) + info.version)));
 }
 
 /* override */
