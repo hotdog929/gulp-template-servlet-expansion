@@ -1,0 +1,26 @@
+{
+    "name" : "gulp-template-servlet-expansion",
+    "version" : "0.0.1",
+    "devDependencies" : {
+        "mocha" : "^2.4.5"
+    },
+    "dependencies" : {
+        "gulp-rename" : "^1.2.2",
+        "q" : "^1.4.1",
+        "event-stream" : "^3.3.2",
+        "del" : "^2.2.0",
+        "merge" : "^1.2.0",
+        "jsonnet-exec" : "^0.1.0",
+        "gulp-template-util" : "^0.0.1"
+    },
+    "scripts" : {
+        "test" : "node_modules/mocha/bin/mocha"
+    },
+    "main" : "index.js",
+    "license" : "MIT",
+    "author" : "hotdog929 <hotdog929@gmail.com>",
+    "repository" : {
+        "type" : "git",
+        "url" : "https://github.com/hotdog929/gulp-template-servlet-expansion.git"
+    }
+}
