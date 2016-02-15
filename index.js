@@ -19,7 +19,6 @@ var info = {
     scriptDir : "src/main/webapp/coffee",
     cssDir : "src/main/webapp/less",
     viewsDir : "src/main/webapp/WEB-INF/view",
-    jsonI18nDir : "src/main/webapp/i18n",
     javaI18nDir : "src/main/resources/i18n",
     webLibDir : "src/main/webapp/lib",
     webResourceDir : "src/main/webapp/resource",
@@ -27,6 +26,7 @@ var info = {
     versionFile : "src/main/resources/version.properties",
     cdnFile : "src/main/resources/cdn.properties",
     jsWebI18n : "jsWebI18n",
+    javaI18nFileName : "messages_#{file}.properties",
 };
 
 var version = '';
@@ -78,7 +78,6 @@ function delViewTask(view){
 function cleanTask(){
     return del([
         info.distDir,
-        info.jsonI18nDir,
         info.javaI18nDir
     ]);
 }
@@ -93,13 +92,13 @@ function copyWebLibTask(){
         webLibModules.push(util.dirPath(info.nodeModulesDir) + module + '/**/*');
     }
     return gulp.src(webLibModules, {base : util.dirPath(info.nodeModulesDir)})
-        .pipe(gulp.dest(util.dirPath(info.distDir)))
+        .pipe(gulp.dest(util.dirPath(info.distDirWithVersion)))
         .pipe(gulp.dest(util.dirPath(info.webLibDir)));
 }
 
 function copyWebResourceTask(){
     return gulp.src(util.dirPath(info.webResourceDir) + "**/*", {base : util.dirPath(info.webResourceDir)})
-        .pipe(gulp.dest(util.dirPath(info.distDir)));
+        .pipe(gulp.dest(util.dirPath(info.distDirWithVersion)));
 }
 
 function jsonToProperties(json, prefix){
@@ -131,7 +130,7 @@ function buildJavaI18n(){
         var resutl = jsonToProperties(i18nJson, '');
         file.contents = new Buffer(resutl);
         var fileName = path.basename(file.path, '.jsonnet');
-        file.path = path.join(file.base, javaI18nFileName.replace(javaI18nFileNameRegex, fileName));
+        file.path = path.join(file.base, info.javaI18nFileName.replace(/#{file}/g, fileName));
         cb(null, file);
     });
 }
@@ -181,10 +180,10 @@ function gulpTemplateServletExpansion(gulpInstance, infos){
 
     info.version = version;
     info.cdn = cdn;
-    info.distDir = util.dirPath(info.distDir) + version;
-    info.distJs = info.distDir + '/js';
-    info.distCss = info.distDir + '/css';
-    info.distI18n = info.distDir + '/i18n';
+    info.distDirWithVersion = util.dirPath(info.distDir) + version;
+    info.distJs = info.distDirWithVersion + '/js';
+    info.distCss = info.distDirWithVersion + '/css';
+    info.distI18n = info.distDirWithVersion + '/i18n';
 
 	gulp.task('addModule', addModuleTask);
     gulp.task('addView', addViewTask);
