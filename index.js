@@ -12,14 +12,14 @@ var util = require('gulp-template-util');
 var gulp = null;
 
 var info = {
-    scriptFilenameExtension : "coffee",
-    cssFilenameExtension : "less",
+    scriptFilenameExtension : "js",
+    cssFilenameExtension : "css",
     htmlFilenameExtension : "html",
     gulpTemplateDir : "gulp_template",
     nodeModulesDir : "node_modules",
     i18nDir : "src/main/i18n",
-    scriptDir : "src/main/webapp/coffee",
-    cssDir : "src/main/webapp/less",
+    scriptDir : "src/main/webapp/js",
+    cssDir : "src/main/webapp/css",
     viewsDir : "src/main/webapp/WEB-INF/view",
     javaI18nDir : "src/main/resources/i18n",
     webLibDir : "src/main/webapp/lib",
@@ -283,20 +283,20 @@ function gulpTemplateServletExpansion(gulpInstance, infos){
     gulp.task('watch', function(view, modules){
         scriptModules = (!modules) ? [] : util.splitPaths(modules);
         scriptModules.push(view);
-        var scriptPaths = _.map(scriptModules, function(name){return util.dirPath(info.scriptDir) + '**/'+name+'.coffee'});
+        var scriptPaths = _.map(scriptModules, function(name){return util.dirPath(info.scriptDir) + '**/' + name + '.' + info.scriptFilenameExtension});
         gulp.watch(scriptPaths, function(event){
-            util.logStream(scriptTask, [util.dirPath(info.scriptDir) + '**/'+view+'.coffee']);
+            util.logStream(gulpTemplateServletExpansion.scriptTask, [util.dirPath(info.scriptDir) + '**/' + view + '.' + info.scriptFilenameExtension]);
         });
 
         cssModules = (!modules) ? [] : util.splitPaths(modules);
         cssModules.push(view);
-        var cssPaths = _.map(cssModules, function(name){return util.dirPath(info.cssDir) + '**/'+name+'.less'});
+        var cssPaths = _.map(cssModules, function(name){return util.dirPath(info.cssDir) + '**/' + name + '.' + info.cssFilenameExtension});
         gulp.watch(cssPaths, function(event){
-            util.logStream(cssTask, [util.dirPath(info.cssDir) + '**/'+view+'.less']);
+            util.logStream(gulpTemplateServletExpansion.cssTask, [util.dirPath(info.cssDir) + '**/' + view + '.' + info.cssFilenameExtension]);
         });
 
         gulp.watch(util.dirPath(info.i18nDir) + "**/*.jsonnet", function(event){
-            util.logPromise(servletExpansion.i18nTask, [event.path]);
+            util.logPromise(gulpTemplateServletExpansion.i18nTask, [event.path]);
         });
     });
 
