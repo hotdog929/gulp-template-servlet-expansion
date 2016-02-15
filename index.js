@@ -171,7 +171,7 @@ function i18nAllTask(){
 }
 
 
-function gulpTemplateServletExpansion = function(gulpInstance, infos){
+function gulpTemplateServletExpansion(gulpInstance, infos){
     gulp = gulpInstance;
 
     info = merge.recursive(info, infos);
@@ -196,6 +196,10 @@ function gulpTemplateServletExpansion = function(gulpInstance, infos){
     gulp.task('i18n', i18nTask);
     gulp.task("i18nAll", i18nAllTask);
 
+    gulpTemplateServletExpansion.version = version;
+    gulpTemplateServletExpansion.cdn = cdn;
+    gulpTemplateServletExpansion.info = info;
+
     return gulp;
 }
 
@@ -208,10 +212,6 @@ gulpTemplateServletExpansion.copyWebLibTask = copyWebLibTask;
 gulpTemplateServletExpansion.copyWebResourceTask = copyWebResourceTask;
 gulpTemplateServletExpansion.i18nTask = i18nTask;
 gulpTemplateServletExpansion.i18nAllTask = i18nAllTask;
-gulpTemplateServletExpansion.version = version;
-gulpTemplateServletExpansion.cdn = cdn;
-gulpTemplateServletExpansion.info = info;
-
 
 if(typeof(window) != 'undefined' && window != null){
     window['gulpTemplateServletExpansion'] = gulpTemplateServletExpansion;

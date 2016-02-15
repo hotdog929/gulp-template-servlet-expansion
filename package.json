@@ -2,6 +2,8 @@
     "name" : "gulp-template-servlet-expansion",
     "version" : "0.0.1",
     "devDependencies" : {
+        "gulp" : "^3.9.1",
+        "gulp-param" : "^1.0.3",
         "mocha" : "^2.4.5"
     },
     "dependencies" : {
