@@ -2,7 +2,9 @@ var rename = require("gulp-rename");
 var fs = require('fs');
 var es = require('event-stream');
 var del = require('del');
+var path = require('path');
 var Q = require('q');
+var _ = require('underscore');
 var merge = require('merge');
 var jsonnetExec = require('jsonnet-exec');
 var util = require('gulp-template-util');
@@ -170,6 +172,79 @@ function i18nAllTask(){
 }
 
 
+/* override */
+function createScriptEnvContent(version, cdn){
+    return 'var env = {version:"' + version + '",cdn:"' + cdn + '"};';
+}
+
+function scriptEnvTask(){
+    return Q.nfcall(
+        fs.writeFile,
+        util.dirPath(info.scriptDir) + '_env.' + info.scriptFilenameExtension,
+        gulpTemplateServletExpansion.createScriptEnvContent(info.version, util.dirPath(util.dirPath(info.cdn) + info.version)));
+}
+
+/* override */
+function buildScript(){
+    return es.map(function(file, cb){
+        setTimeout(function(){cb(null, file)}, 100);
+    });
+}
+
+function scriptTask(paths){
+    return gulp.src(util.splitPaths(paths))
+        .pipe(gulpTemplateServletExpansion.buildScript())
+        .pipe(rename({extname:'.js'}))
+        .pipe(gulp.dest(util.dirPath(info.distJs)));
+}
+
+function scriptAllTask(){
+    return scriptTask(util.dirPath(info.scriptDir) + '**/*.' + info.scriptFilenameExtension);
+}
+
+
+/* override */
+function createCssEnvContent(version, cdn){
+    return'env{version:"' + version + '";cdn:"' + cdn + '"}';
+}
+
+function cssEnvTask(){
+    return Q.nfcall(
+        fs.writeFile,
+        util.dirPath(info.cssDir) + '_env.' + info.cssFilenameExtension,
+        gulpTemplateServletExpansion.createCssEnvContent(info.version, util.dirPath(util.dirPath(info.cdn) + info.version)));
+}
+
+/* override */
+function buildCss(){
+    return es.map(function(file, cb){
+       setTimeout(function(){cb(null, file)}, 100); 
+    });
+}
+
+function cssTask(paths){
+    return gulp.src(util.splitPaths(paths))
+        .pipe(gulpTemplateServletExpansion.buildCss())
+        .pipe(rename({extname:'.css'}))
+        .pipe(gulp.dest(util.dirPath(info.distCss)));
+}
+
+function cssAllTask(){
+    return cssTask(util.dirPath(info.cssDir) + '**/*.' + info.cssFilenameExtension);
+}
+
+
+function buildTask(){
+    var deferred = Q.defer();
+    Q.fcall(gulpTemplateServletExpansion.cleanTask)
+        .then(function(){return util.streamsPromise(gulpTemplateServletExpansion.copyWebLibTask(), gulpTemplateServletExpansion.copyWebResourceTask())})
+        .then(function(){return Q.all([gulpTemplateServletExpansion.i18nAllTask(), gulpTemplateServletExpansion.scriptEnvTask(), gulpTemplateServletExpansion.cssEnvTask()])})
+        .then(function(){return util.streamsPromise(gulpTemplateServletExpansion.scriptAllTask(), gulpTemplateServletExpansion.cssAllTask())})
+        .then(function(){deferred.resolve();});
+    return deferred.promise;
+}
+
+
 function gulpTemplateServletExpansion(gulpInstance, infos){
     gulp = gulpInstance;
 
@@ -195,6 +270,36 @@ function gulpTemplateServletExpansion(gulpInstance, infos){
     gulp.task('i18n', i18nTask);
     gulp.task("i18nAll", i18nAllTask);
 
+    gulp.task('scriptEnv', scriptEnvTask);
+    gulp.task('script', ['scriptEnv'], scriptTask);
+    gulp.task('scriptAll', ['scriptEnv'], scriptAllTask);
+
+    gulp.task('cssEnv', cssEnvTask);
+    gulp.task('css', ['cssEnv'], cssTask);
+    gulp.task('cssAll', ['cssEnv'], cssAllTask);
+
+    gulp.task('build', buildTask);
+
+    gulp.task('watch', function(view, modules){
+        scriptModules = (!modules) ? [] : util.splitPaths(modules);
+        scriptModules.push(view);
+        var scriptPaths = _.map(scriptModules, function(name){return util.dirPath(info.scriptDir) + '**/'+name+'.coffee'});
+        gulp.watch(scriptPaths, function(event){
+            util.logStream(scriptTask, [util.dirPath(info.scriptDir) + '**/'+view+'.coffee']);
+        });
+
+        cssModules = (!modules) ? [] : util.splitPaths(modules);
+        cssModules.push(view);
+        var cssPaths = _.map(cssModules, function(name){return util.dirPath(info.cssDir) + '**/'+name+'.less'});
+        gulp.watch(cssPaths, function(event){
+            util.logStream(cssTask, [util.dirPath(info.cssDir) + '**/'+view+'.less']);
+        });
+
+        gulp.watch(util.dirPath(info.i18nDir) + "**/*.jsonnet", function(event){
+            util.logPromise(servletExpansion.i18nTask, [event.path]);
+        });
+    });
+
     gulpTemplateServletExpansion.version = version;
     gulpTemplateServletExpansion.cdn = cdn;
     gulpTemplateServletExpansion.info = info;
@@ -211,6 +316,19 @@ gulpTemplateServletExpansion.copyWebLibTask = copyWebLibTask;
 gulpTemplateServletExpansion.copyWebResourceTask = copyWebResourceTask;
 gulpTemplateServletExpansion.i18nTask = i18nTask;
 gulpTemplateServletExpansion.i18nAllTask = i18nAllTask;
+gulpTemplateServletExpansion.scriptEnvTask = scriptEnvTask;
+gulpTemplateServletExpansion.scriptTask = scriptTask;
+gulpTemplateServletExpansion.scriptAllTask = scriptAllTask;
+gulpTemplateServletExpansion.cssEnvTask = cssEnvTask;
+gulpTemplateServletExpansion.cssTask = cssTask;
+gulpTemplateServletExpansion.cssAllTask = cssAllTask;
+gulpTemplateServletExpansion.buildTask = buildTask;
+
+gulpTemplateServletExpansion.createScriptEnvContent = createScriptEnvContent;
+gulpTemplateServletExpansion.buildScript = buildScript;
+gulpTemplateServletExpansion.createCssEnvContent = createCssEnvContent;
+gulpTemplateServletExpansion.buildCss = buildCss;
+
 
 if(typeof(window) != 'undefined' && window != null){
     window['gulpTemplateServletExpansion'] = gulpTemplateServletExpansion;

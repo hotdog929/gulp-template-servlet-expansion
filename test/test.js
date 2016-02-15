@@ -18,6 +18,17 @@ describe('gulp-template-servlet-expansion', function(){
         assert(expansion.copyWebResourceTask != null);
         assert(expansion.i18nTask != null);
         assert(expansion.i18nAllTask != null);
+        assert(expansion.scriptEnvTask != null);
+        assert(expansion.scriptTask != null);
+        assert(expansion.scriptAllTask != null);
+        assert(expansion.cssEnvTask != null);
+        assert(expansion.cssTask != null);
+        assert(expansion.cssAllTask != null);
+        assert(expansion.buildTask != null);
+        assert(expansion.createScriptEnvContent != null);
+        assert(expansion.buildScript != null);
+        assert(expansion.createCssEnvContent != null);
+        assert(expansion.buildCss != null);
         assert(expansion.version != null);
         assert.equal(expansion.version,'1.0.0');
         assert(expansion.cdn != null);
