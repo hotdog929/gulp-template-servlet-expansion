@@ -17,6 +17,7 @@ var info = {
     htmlFilenameExtension : "html",
     gulpTemplateDir : "gulp_template",
     nodeModulesDir : "node_modules",
+    configDir : "config",
     i18nDir : "src/main/i18n",
     scriptDir : "src/main/webapp/js",
     cssDir : "src/main/webapp/css",
@@ -75,6 +76,21 @@ function delModuleTask(module){
 function delViewTask(view){
     view = util.filePath(view.trim());
     return Q.all([del([util.dirPath(info.viewsDir) + view + '.' + info.htmlFilenameExtension]), delModuleTask(view)]);
+}
+
+function changeConfigTask(site){
+    var deferred = Q.defer();
+    gulp.src(util.dirPath(info.configDir) + 'default/**/*', {base : util.dirPath(info.configDir) + 'default'})
+        .pipe(gulp.dest('./'))
+        .on('end', function(){
+            if(site){
+                gulp.src(util.dirPath(info.configDir) + site + '/**/*', {base : util.dirPath(info.configDir) + site})
+                    .pipe(gulp.dest('./'))
+                    .on('end', function(){deferred.resolve();})
+                    .on('error', function(){deferred.reject();})
+            }else{deferred.resolve();}})
+        .on('error', function(){deferred.reject();});
+    return deferred.promise;
 }
 
 function cleanTask(){
@@ -292,6 +308,7 @@ function gulpTemplateServletExpansion(gulpInstance, infos){
     gulp.task('addView', addViewTask);
     gulp.task('delModule', delModuleTask);
     gulp.task('delView', delViewTask);
+    gulp.task('changeConfig', changeConfigTask);
     gulp.task('clean', cleanTask);
     gulp.task('copyWebLib', copyWebLibTask);
     gulp.task('copyWebResource', copyWebResourceTask);
@@ -339,6 +356,7 @@ gulpTemplateServletExpansion.addModuleTask = addModuleTask;
 gulpTemplateServletExpansion.addViewTask = addViewTask;
 gulpTemplateServletExpansion.delModuleTask = delModuleTask;
 gulpTemplateServletExpansion.delViewTask = delViewTask;
+gulpTemplateServletExpansion.changeConfigTask = changeConfigTask;
 gulpTemplateServletExpansion.cleanTask = cleanTask;
 gulpTemplateServletExpansion.copyWebLibTask = copyWebLibTask;
 gulpTemplateServletExpansion.copyWebResourceTask = copyWebResourceTask;

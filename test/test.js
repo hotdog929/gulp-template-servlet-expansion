@@ -10,6 +10,7 @@ describe('gulp-template-servlet-expansion', function(){
         assert(expansion.addViewTask != null);
         assert(expansion.delModuleTask != null);
         assert(expansion.delViewTask != null);
+        assert(expansion.changeConfigTask != null);
         assert(expansion.cleanTask != null);
         assert(expansion.copyWebLibTask != null);
         assert(expansion.copyWebResourceTask != null);
