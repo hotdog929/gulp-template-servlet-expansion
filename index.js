@@ -140,7 +140,7 @@ function buildJavaI18n(){
 function buildJsI18n(){
     return es.map(function(file, cb){
         var i18nJson = JSON.parse(file.contents.toString());
-        file.contents = new Buffer(info.jsWebI18n + ' = ' + JSON.stringify(i18nJson)+";");
+        file.contents = new Buffer(info.jsWebI18n + ' = ' + JSON.stringify(i18nJson) + ';');
         cb(null, file);
     });
 }
@@ -153,13 +153,21 @@ function buildI18n(){
     });
 }
 
-function i18nTask(paths){
-    var javaI18nStream = gulp.src(util.splitPaths(paths))
+function i18nTask(paths, langs){
+    if(!paths){
+        paths = [];
+    }
+    if(!langs){
+        langs = [];
+    }
+    var langList = _.map(util.splitPaths(langs), function(lang){util.dirPath(info.i18nDir) + '**/' + lang + '.jsonnet'});
+    var pathList = util.splitPaths(paths).concat(langList);
+    var javaI18nStream = gulp.src(pathList)
         .pipe(buildI18n())
         .pipe(buildJavaI18n())
         .pipe(rename({extname:'.properties'}))
         .pipe(gulp.dest(util.dirPath(info.javaI18nDir)));
-    var jsI18nStream = gulp.src(util.splitPaths(paths))
+    var jsI18nStream = gulp.src(pathList)
         .pipe(buildI18n())
         .pipe(buildJsI18n())
         .pipe(rename({extname:'.js'}))
@@ -168,7 +176,7 @@ function i18nTask(paths){
 }
 
 function i18nAllTask(){
-    return i18nTask(util.dirPath(info.i18nDir) + "**/*.jsonnet");
+    return i18nTask(util.dirPath(info.i18nDir) + '**/*.jsonnet');
 }
 
 
@@ -191,8 +199,16 @@ function buildScript(){
     });
 }
 
-function scriptTask(paths){
-    return gulp.src(util.splitPaths(paths))
+function scriptTask(paths, modules){
+    if(!paths){
+        paths = [];
+    }
+    if(!modules){
+        modules = [];
+    }
+    var moduleList = _.map(util.splitPaths(modules), function(module){util.dirPath(info.scriptDir) + '**/' + module + '.' + info.scriptFilenameExtension});
+    var pathList = util.splitPaths(paths).concat(moduleList);
+    return gulp.src(pathList)
         .pipe(gulpTemplateServletExpansion.buildScript())
         .pipe(rename({extname:'.js'}))
         .pipe(gulp.dest(util.dirPath(info.distJs)));
@@ -222,8 +238,16 @@ function buildCss(){
     });
 }
 
-function cssTask(paths){
-    return gulp.src(util.splitPaths(paths))
+function cssTask(paths, modules){
+    if(!paths){
+        paths = [];
+    }
+    if(!modules){
+        modules = [];
+    }
+    var moduleList = _.map(util.splitPaths(modules), function(module){util.dirPath(info.scriptDir) + '**/' + module + '.' + info.scriptFilenameExtension});
+    var pathList = util.splitPaths(paths).concat(moduleList);
+    return gulp.src(pathList)
         .pipe(gulpTemplateServletExpansion.buildCss())
         .pipe(rename({extname:'.css'}))
         .pipe(gulp.dest(util.dirPath(info.distCss)));
