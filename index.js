@@ -97,7 +97,11 @@ function changeConfigTask(site){
 function cleanTask(){
     return del([
         info.distDir,
-        info.javaI18nDir
+        info.javaI18nDir,
+        info.webLibDir,
+        util.dirPath(info.envDir) + '**/*.json',
+        util.dirPath(info.envDir) + '**/vars',
+        util.dirPath(info.configDir) + '**/*.properties'
     ]);
 }
 
