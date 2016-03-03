@@ -19,7 +19,7 @@ var info = {
     nodeModulesDir : "node_modules",
     configDir : "config",
     envDir : "env",
-    i18nDir : "src/main/i18n",
+    i18nDir : "i18n",
     scriptDir : "src/main/webapp/js",
     cssDir : "src/main/webapp/css",
     viewsDir : "src/main/webapp/WEB-INF/view",
@@ -339,8 +339,14 @@ function gulpTemplateServletExpansion(gulpInstance, infos){
 
     info = merge.recursive(info, infos);
 
-    version = fs.readFileSync(info.versionFile, 'utf8').toString().match(/^version=(\S+)/m)[1];
-    cdn = fs.readFileSync(info.cdnFile, 'utf8').toString().match(/^cdn=(.*)$/m)[1];
+    version = ""
+    try{
+        version = fs.readFileSync(info.versionFile, 'utf8').toString().match(/^version=(\S+)/m)[1];
+    }catch(err){}
+    cdn = ""
+    try{
+        cdn = fs.readFileSync(info.cdnFile, 'utf8').toString().match(/^cdn=(.*)$/m)[1];    
+    }catch(err){}
 
     info.version = version;
     info.cdn = cdn;
