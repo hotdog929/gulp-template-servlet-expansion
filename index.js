@@ -334,6 +334,15 @@ function buildTask(){
 }
 
 
+function initTask(){
+    var deferred = Q.defer();
+    Q.fcall(function(){return util.logPromise(gulpTemplateServletExpansion.cleanTask)})
+        .then(function(){return util.logPromise(gulpTemplateServletExpansion.envTask);})
+        .then(function(){return util.logPromise(gulpTemplateServletExpansion.changeConfigTask);})
+        .then(function(){deferred.resolve();});
+    return deferred.promise;
+}
+
 function gulpTemplateServletExpansion(gulpInstance, infos){
     gulp = gulpInstance;
 
@@ -376,6 +385,7 @@ function gulpTemplateServletExpansion(gulpInstance, infos){
     gulp.task('cssAll', ['cssEnv'], cssAllTask);
 
     gulp.task('build', buildTask);
+    gulp.task('init', initTask);
 
     gulp.task('watch', function(view, modules){
         scriptModules = (!modules) ? [] : util.splitPaths(modules);
@@ -422,6 +432,7 @@ gulpTemplateServletExpansion.cssEnvTask = cssEnvTask;
 gulpTemplateServletExpansion.cssTask = cssTask;
 gulpTemplateServletExpansion.cssAllTask = cssAllTask;
 gulpTemplateServletExpansion.buildTask = buildTask;
+gulpTemplateServletExpansion.initTask = initTask;
 
 gulpTemplateServletExpansion.createScriptEnvContent = createScriptEnvContent;
 gulpTemplateServletExpansion.buildScript = buildScript;
