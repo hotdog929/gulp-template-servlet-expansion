@@ -201,14 +201,14 @@ function createScriptEnvContent(version, cdn){
 }
 
 function scriptEnvTask(){
-    var cdnPath = util.filePath(util.dirPath(info.cdn)
+    var cdnPath = util.filePath(util.dirPath(info.cdn));
     if(cdnPath.length == 0){
         cdnPath = '/';
     }
     return Q.nfcall(
         fs.writeFile,
         util.dirPath(info.scriptDir) + '_env.' + info.scriptFilenameExtension,
-        gulpTemplateServletExpansion.createScriptEnvContent(info.version, cdnPath + info.version)));
+        gulpTemplateServletExpansion.createScriptEnvContent(info.version, cdnPath + info.version));
 }
 
 /* override */
@@ -243,14 +243,14 @@ function createCssEnvContent(version, cdn){
 }
 
 function cssEnvTask(){
-    var cdnPath = util.filePath(util.dirPath(info.cdn)
+    var cdnPath = util.filePath(util.dirPath(info.cdn));
     if(cdnPath.length == 0){
         cdnPath = '/';
     }
     return Q.nfcall(
         fs.writeFile,
         util.dirPath(info.cssDir) + '_env.' + info.cssFilenameExtension,
-        gulpTemplateServletExpansion.createCssEnvContent(info.version, cdnPath + info.version)));
+        gulpTemplateServletExpansion.createCssEnvContent(info.version, cdnPath + info.version));
 }
 
 /* override */
