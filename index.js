@@ -18,6 +18,7 @@ var info = {
     gulpTemplateDir : "gulp_template",
     nodeModulesDir : "node_modules",
     configDir : "config",
+    envDir : "env",
     i18nDir : "src/main/i18n",
     scriptDir : "src/main/webapp/js",
     cssDir : "src/main/webapp/css",
@@ -140,6 +141,37 @@ function jsonToProperties(json, prefix){
         }
     }
     return str;
+}
+
+function buildEnv(){
+    var reg = /^(.+)\/.+?\.jsonnet$/;
+    return es.map(function(file, cb){
+        var dir = reg.exec(file.path)[1]
+        var result = jsonnetExec.execSync('-m ' + dir + ' ' + file.path);
+        cb(null, file);
+    });
+}
+
+function buildJavaEnv(){
+    return es.map(function(file, cb){
+        var resutl = jsonToProperties(JSON.parse(file.contents.toString()), '');
+        file.contents = new Buffer(resutl);
+        cb(null, file);
+    });
+}
+
+function envTask(){
+    var deferred = Q.defer();
+    Q.fcall(function(){return util.streamsPromise(
+            gulp.src(util.dirPath(info.envDir) + '**/*.jsonnet')
+                .pipe(buildEnv()));})
+        .then(function(){return util.streamsPromise(
+            gulp.src(util.dirPath(info.envDir) + '**/*.json')
+                .pipe(buildJavaEnv())
+                .pipe(rename({extname:'.properties'}))
+                .pipe(gulp.dest(util.dirPath(info.configDir))));})
+        .then(function(){deferred.resolve();});
+    return deferred.promise;
 }
 
 function buildJavaI18n(){
@@ -287,6 +319,7 @@ function buildTask(){
     var deferred = Q.defer();
     Q.fcall(function(){return util.logPromise(gulpTemplateServletExpansion.cleanTask)})
         .then(function(){return Q.all([
+            util.logPromise(gulpTemplateServletExpansion.envTask),
             util.logStream(gulpTemplateServletExpansion.copyWebLibTask), 
             util.logStream(gulpTemplateServletExpansion.copyWebResourceTask)])})
         .then(function(){return Q.all([
@@ -324,6 +357,7 @@ function gulpTemplateServletExpansion(gulpInstance, infos){
     gulp.task('clean', cleanTask);
     gulp.task('copyWebLib', copyWebLibTask);
     gulp.task('copyWebResource', copyWebResourceTask);
+    gulp.task('env', envTask);
     gulp.task('i18n', i18nTask);
     gulp.task("i18nAll", i18nAllTask);
 
@@ -372,6 +406,7 @@ gulpTemplateServletExpansion.changeConfigTask = changeConfigTask;
 gulpTemplateServletExpansion.cleanTask = cleanTask;
 gulpTemplateServletExpansion.copyWebLibTask = copyWebLibTask;
 gulpTemplateServletExpansion.copyWebResourceTask = copyWebResourceTask;
+gulpTemplateServletExpansion.envTask = envTask;
 gulpTemplateServletExpansion.i18nTask = i18nTask;
 gulpTemplateServletExpansion.i18nAllTask = i18nAllTask;
 gulpTemplateServletExpansion.scriptEnvTask = scriptEnvTask;
