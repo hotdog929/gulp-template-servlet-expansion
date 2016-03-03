@@ -1,6 +1,6 @@
 {
     "name" : "gulp-template-servlet-expansion",
-    "version" : "0.0.9",
+    "version" : "0.1.0",
     "devDependencies" : {
         "gulp" : "^3.9.1",
         "gulp-param" : "^1.0.3",
