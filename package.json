@@ -1,6 +1,6 @@
 {
     "name" : "gulp-template-servlet-expansion",
-    "version" : "0.1.0",
+    "version" : "0.1.1",
     "devDependencies" : {
         "gulp" : "^3.9.1",
         "gulp-param" : "^1.0.3",
@@ -15,7 +15,7 @@
         "underscore" : "^1.8.3",
         "merge" : "^1.2.0",
         "jsonnet-exec" : "^0.1.0",
-        "gulp-template-util" : "^0.0.1"
+        "gulp-template-util" : "^0.0.2"
     },
     "scripts" : {
         "test" : "node_modules/mocha/bin/mocha"

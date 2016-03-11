@@ -323,7 +323,6 @@ function buildTask(){
     var deferred = Q.defer();
     Q.fcall(function(){return util.logPromise(gulpTemplateServletExpansion.cleanTask)})
         .then(function(){return Q.all([
-            util.logPromise(gulpTemplateServletExpansion.envTask),
             util.logStream(gulpTemplateServletExpansion.copyWebLibTask), 
             util.logStream(gulpTemplateServletExpansion.copyWebResourceTask)])})
         .then(function(){return Q.all([

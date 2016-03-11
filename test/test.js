@@ -23,6 +23,7 @@ describe('gulp-template-servlet-expansion', function(){
         assert(expansion.cssTask != null);
         assert(expansion.cssAllTask != null);
         assert(expansion.buildTask != null);
+        assert(expansion.initTask != null);
         assert(expansion.createScriptEnvContent != null);
         assert(expansion.buildScript != null);
         assert(expansion.createCssEnvContent != null);
